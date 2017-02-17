@@ -36,6 +36,7 @@ object TwitterStreamingCollector {
     twitterStream.foreachRDD((rdd, time) => {
       val count = rdd.count()
       if (rdd.count() > 0) {
+        numTweetsCollected += count
         println("Numbmer of tweets received: " + rdd.count())
         rdd
           .map(t => (
@@ -45,13 +46,12 @@ object TwitterStreamingCollector {
             t.getHashtagEntities.map(_.getText).mkString(Utils.hashTagSeparator)
             //            t.getRetweetCount  issue in twitter api, always returns 0
           ))
-        numTweetsCollected += count
           .repartition(partitionNum)
           //.coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweets" + time.milliseconds.toString + ".txt")
           .coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweets" + ".txt")
-        if (numTweetsCollected > numTweetsToCollect) {
-          System.exit(0) // exit from the streaming after have collected 10 tweets !
-        }
+          if (numTweetsCollected > numTweetsToCollect) {
+            System.exit(0) // exit from the streaming after have collected 10 tweets !
+          }
 
 
         //TODO bk add checkpointing
