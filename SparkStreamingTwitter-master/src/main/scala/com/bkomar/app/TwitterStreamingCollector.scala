@@ -34,6 +34,7 @@ object TwitterStreamingCollector {
 
     val twitterStream = TwitterUtils.createStream(ssc, None, keyWordsFilters)
     twitterStream.foreachRDD((rdd, time) => {
+      val count = rdd.count()
       if (rdd.count() > 0) {
         println("Numbmer of tweets received: " + rdd.count())
         rdd
