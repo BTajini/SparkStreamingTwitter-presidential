@@ -51,7 +51,7 @@ object TwitterStreamingCollector {
             ))
             .repartition(partitionNum)
             //.coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweets" + time.milliseconds.toString + ".txt")
-            .coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweetsmerged")
+            .coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweetsmerged"+".json")
 
 
             }
