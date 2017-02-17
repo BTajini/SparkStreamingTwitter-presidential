@@ -6,8 +6,7 @@ import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 object TwitterStreamingCollector {
-  private var numTweetsCollected = 0L //count for the tweet collected
-  private var partNum = 0
+  private var numTweetsCollected = 0 //count for the tweet collected
   private var numTweetsToCollect = 10 // num of tweet to collect
 
   def main(args: Array[String]) {
@@ -34,24 +33,27 @@ object TwitterStreamingCollector {
 
     val twitterStream = TwitterUtils.createStream(ssc, None, keyWordsFilters)
     twitterStream.foreachRDD((rdd, time) => {
-      val count = rdd.count()
       if (rdd.count() > 0) {
-        numTweetsCollected += count
-        println("Numbmer of tweets received: " + rdd.count())
-        rdd
-          .map(t => (
-            t.getUser.getName,
-            t.getCreatedAt.toString,
-            t.getText,
-            t.getHashtagEntities.map(_.getText).mkString(Utils.hashTagSeparator)
-            //            t.getRetweetCount  issue in twitter api, always returns 0
-          ))
-          .repartition(partitionNum)
-          //.coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweets" + time.milliseconds.toString + ".txt")
-          .coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweetsmerged")
-          if (numTweetsCollected > numTweetsToCollect) {
-            System.exit(0) // exit from the streaming after have collected 10 tweets !
+        if (numTweetsCollected > numTweetsToCollect) {
+          System.exit(0)
           }
+        else {
+          numTweetsCollected += rdd.count()
+          println("Numbmer of tweets received: " + rdd.count())
+          rdd
+            .map(t => (
+              t.getUser.getName,
+              t.getCreatedAt.toString,
+              t.getText,
+              t.getHashtagEntities.map(_.getText).mkString(Utils.hashTagSeparator)
+            //            t.getRetweetCount  issue in twitter api, always returns 0
+            ))
+            .repartition(partitionNum)
+            //.coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweets" + time.milliseconds.toString + ".txt")
+            .coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweetsmerged")
+
+
+            }
 
 
         //TODO bk add checkpointing
