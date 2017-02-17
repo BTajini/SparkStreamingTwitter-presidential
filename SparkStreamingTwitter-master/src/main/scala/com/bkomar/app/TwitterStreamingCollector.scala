@@ -6,7 +6,7 @@ import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 object TwitterStreamingCollector {
-  private var numTweetsCollected = 0 //count for the tweet collected
+  private var numTweetsCollected = 0L //count for the tweet collected
   private var numTweetsToCollect = 10 // num of tweet to collect
 
   def main(args: Array[String]) {
