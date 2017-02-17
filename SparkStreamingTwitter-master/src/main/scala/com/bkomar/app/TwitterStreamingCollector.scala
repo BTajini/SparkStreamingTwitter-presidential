@@ -35,7 +35,7 @@ object TwitterStreamingCollector {
     twitterStream.foreachRDD((rdd, time) => {
       if (rdd.count() > 0) {
         if (numTweetsCollected > numTweetsToCollect) {
-          System.exit(0)
+          System.exit(1)
           }
         else {
           numTweetsCollected += rdd.count()
