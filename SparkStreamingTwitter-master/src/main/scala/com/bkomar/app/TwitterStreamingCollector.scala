@@ -48,7 +48,7 @@ object TwitterStreamingCollector {
           ))
           .repartition(partitionNum)
           //.coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweets" + time.milliseconds.toString + ".txt")
-          .coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweets" + ".txt")
+          .coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweetsmerged")
           if (numTweetsCollected > numTweetsToCollect) {
             System.exit(0) // exit from the streaming after have collected 10 tweets !
           }
