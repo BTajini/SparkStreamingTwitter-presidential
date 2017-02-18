@@ -5,7 +5,7 @@ import java.util.Date
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-//import twitter4j._
+import twitter4j._
 
 object TwitterStreamingCollector {
   private var numTweetsCollected = 0L //count for the tweet collected
@@ -15,7 +15,7 @@ object TwitterStreamingCollector {
   def main(args: Array[String]) {
 
     // Size of output batches in seconds
-    val outputBatchInterval = OUTPUT_BATCH_INTERVAL.map(_.toInt).getOrElse(60)
+    val outputBatchInterval = OUTPUT_BATCH_INTERVAL.getOrElse(60)
     //number of args except filters
     val baseParamsCount = 3
     if (args.length < 4) {
@@ -57,7 +57,7 @@ object TwitterStreamingCollector {
       (s => s.getText, "text", "STRING"),
       (s => s.getUser.getName, "user_name", "STRING"),
       (s => hiveDateFormat.format(s.getUser.getCreatedAt), "user_created_at", "TIMESTAMP"),
-
+      (s => s.getUser.getLang, "user_language", "STRING"),
       // Break out date fields for partitioning
       (s => hiveDateFormat.format(s.getCreatedAt), "created_at", "TIMESTAMP")
 
@@ -91,7 +91,7 @@ object TwitterStreamingCollector {
     // Format each tweet
     val formattedStatuses = twitterStream.map(s => formatStatus(s))
 
-    val frenchTweets = formattedStatuses.filter(_.getLang() == "fr")
+    val frenchTweets = formattedStatuses.getUser.getLang == "fr"
     // Group into larger batches
     val batchedStatuses = frenchTweets.window(Seconds(outputBatchInterval), Seconds(outputBatchInterval))
 
