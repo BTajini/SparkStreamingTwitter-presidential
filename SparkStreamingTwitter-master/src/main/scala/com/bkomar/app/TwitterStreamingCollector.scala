@@ -5,14 +5,17 @@ import java.util.Date
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+//import twitter4j._
 
 object TwitterStreamingCollector {
   private var numTweetsCollected = 0L //count for the tweet collected
   private var numTweetsToCollect = 20L // num of tweet to collect
+  private var OUTPUT_BATCH_INTERVAL = 3600
 
   def main(args: Array[String]) {
 
-
+    // Size of output batches in seconds
+    val outputBatchInterval = OUTPUT_BATCH_INTERVAL.map(_.toInt).getOrElse(60)
     //number of args except filters
     val baseParamsCount = 3
     if (args.length < 4) {
@@ -32,12 +35,19 @@ object TwitterStreamingCollector {
 
     println("Collector is executed with the filters: " + keyWordsFilters.mkString(Utils.hashTagSeparator))
 
+    outputBatchInterval match {
+      case 3600 =>
+      case 60 =>
+      case _ => throw new Exception(
+        "Output batch interval can only be 60 or 3600 due to Hive partitioning restrictions.")
+    }
 
+    Utils.setUpTwitterOAuth
 
     val sparkConf = new SparkConf().setAppName("TwitterStreamingCollector")
     val ssc = new StreamingContext(sparkConf, Seconds(batchInterval))
 
-    Utils.setUpTwitterOAuth
+
 
     val hiveDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0")
 
@@ -78,14 +88,12 @@ object TwitterStreamingCollector {
     }
     val twitterStream = TwitterUtils.createStream(ssc, None, keyWordsFilters)
 
-    val frenchTweets = twitterStream.filter(_.getLang() == "fr")
-
-
     // Format each tweet
-    val formattedStatuses = frenchTweets.map(s => formatStatus(s))
+    val formattedStatuses = twitterStream.map(s => formatStatus(s))
 
+    val frenchTweets = formattedStatuses.filter(_.getLang() == "fr")
     // Group into larger batches
-    val batchedStatuses = formattedStatuses.window(Seconds(outputBatchInterval), Seconds(outputBatchInterval))
+    val batchedStatuses = frenchTweets.window(Seconds(outputBatchInterval), Seconds(outputBatchInterval))
 
 
 
