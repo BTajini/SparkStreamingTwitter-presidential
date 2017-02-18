@@ -16,7 +16,7 @@ object TwitterStreamingCollector {
     val a: Int = 3600
     // Size of output batches in seconds
 
-    val outputBatchInterval = a.getOrElse(60)
+    val outputBatchInterval = a.valueOr(60)
     //number of args except filters
     val baseParamsCount = 3
     if (args.length < 4) {
@@ -114,7 +114,11 @@ object TwitterStreamingCollector {
           println("Number of tweets received: " + count)
           rdd.repartition(partitionNum).coalesce(1, shuffle = true).saveAsTextFile(checkpointDir + outputPath + "tweetsmerged")
             //.coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweets" + time.milliseconds.toString + ".txt")
-
+          import org.apache.hadoop.fs.Path
+          val conf = ssc.hadoopConfiguration
+          val fs = org.apache.hadoop.fs.FileSystem.get(conf)
+          fs.exists.rename(new Path(checkpointDir + outputPath + "tweetsmerged/part-00000"), new Path(checkpointDir + outputPath + time.milliseconds.toString))
+          fs.exists.delete(new Path(checkpointDir + outputPath  + "tweetsmerged"), true)
 
 
 
@@ -122,10 +126,7 @@ object TwitterStreamingCollector {
 
         }
 
-        import org.apache.hadoop.fs.Path
-        val fs = org.apache.hadoop.fs.FileSystem.get(spark.sparkContext.hadoopConfiguration)
-        fs.rename(new Path(checkpointDir + outputPath + "tweetsmerged/part-00000"), new Path(checkpointDir + outputPath + time.milliseconds.toString))
-        fs.delete(new Path(checkpointDir + outputPath  + "tweetsmerged"), true)
+
         //TODO bk add checkpointing
         //test for hive and sql context
       }
