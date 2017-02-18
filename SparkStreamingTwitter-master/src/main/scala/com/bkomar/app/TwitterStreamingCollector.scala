@@ -49,7 +49,7 @@ object TwitterStreamingCollector {
       (s => hiveDateFormat.format(s.getUser.getCreatedAt), "user_created_at", "TIMESTAMP"),
 
       // Break out date fields for partitioning
-      (s => hiveDateFormat.format(s.getCreatedAt), "created_at", "TIMESTAMP"),
+      (s => hiveDateFormat.format(s.getCreatedAt), "created_at", "TIMESTAMP")
 
     )
     // For making a table later, print out the schema
@@ -87,11 +87,8 @@ object TwitterStreamingCollector {
     // Group into larger batches
     val batchedStatuses = formattedStatuses.window(Seconds(outputBatchInterval), Seconds(outputBatchInterval))
 
-    // Save as output in correct directory
-    coalesced.foreach((rdd, time) =>  {
-      val outPartitionFolder = outDateFormat.format(new Date(time.milliseconds))
-      rdd.saveAsTextFile("%s/%s".format(outputDir, outPartitionFolder), classOf[DefaultCodec])
-    })
+
+
     batchedStatuses.foreachRDD((rdd, time) => {
       val count = rdd.count()
       if (rdd.count() > 0) {
