@@ -10,12 +10,13 @@ import twitter4j._
 object TwitterStreamingCollector {
   private var numTweetsCollected = 0L //count for the tweet collected
   private var numTweetsToCollect = 20L // num of tweet to collect
-  private var OUTPUT_BATCH_INTERVAL = 3600
+
 
   def main(args: Array[String]) {
 
     // Size of output batches in seconds
-    val outputBatchInterval = OUTPUT_BATCH_INTERVAL.getOrElse(60)
+
+    val outputBatchInterval = toInt("3600").getOrElse(60)
     //number of args except filters
     val baseParamsCount = 3
     if (args.length < 4) {
