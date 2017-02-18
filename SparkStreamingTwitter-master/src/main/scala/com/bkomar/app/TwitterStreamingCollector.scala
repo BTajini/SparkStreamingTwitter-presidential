@@ -44,6 +44,8 @@ object TwitterStreamingCollector {
     val sparkConf = new SparkConf().setAppName("TwitterStreamingCollector")
     val ssc = new StreamingContext(sparkConf, Seconds(batchInterval))
 
+    val hiveDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0")
+
     val fields: Seq[(Status => Any, String, String)] = Seq(
 
       (s => s.getText, "text", "STRING"),
@@ -70,8 +72,7 @@ object TwitterStreamingCollector {
     //val fileWriter = new FileWriter(outputFile)
     val twitterStream = TwitterUtils.createStream(ssc, None, keyWordsFilters)
 
-    // New Twitter stream
-    val statuses = ssc.twitterStream()
+
 
     // Format each tweet
     val formattedStatuses = twitterStream.map(s => formatStatus(s))
@@ -82,8 +83,7 @@ object TwitterStreamingCollector {
        // u => Option(u.getLang)
       //}.getOrElse("").startsWith("fr")
     //}
-    val frenchTweets = formattedStatuses.filter( t => t._2)
-      .filter { status =>
+    val frenchTweets = formattedStatuses.filter { status =>
         Option(status.getUser).flatMap[String] {
           u => Option(u.getLang)
         }.getOrElse("").startsWith("fr") && CharMatcher.ASCII.matchesAllOf(status.getText) && ( keys.isEmpty || keys.exists{status.getText.contains(_)})
@@ -91,7 +91,7 @@ object TwitterStreamingCollector {
 
 
 
-        val line = s"${geoLocation.getLongitude},${geoLocation.getLatitude},$text\n"
+        //val line = s"${geoLocation.getLongitude},${geoLocation.getLatitude},$text\n"
 
 
 
