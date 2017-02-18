@@ -10,7 +10,7 @@ import java.io._
 
 object TwitterStreamingCollector {
   private var numTweetsCollected = 0L//count for the tweet collected
-  private var numTweetsToCollect = 10 // num of tweet to collect
+  // num of tweet to collect
 
 
   def main(args: Array[String]) {
@@ -20,9 +20,9 @@ object TwitterStreamingCollector {
 
     //number of args except filters
     val baseParamsCount = 3
-    if (args.length < 3) {
+    if (args.length < 4) {
       System.err.println("Run streaming with the following parameters: <outputFile> <batchIntervalSeconds> " +
-        "<partitionsNum> <filtering keywords>")
+        "<partitionsNum> <numTweetsToCollect>")
       System.exit(1)
     }
     // Local directory for stream checkpointing (allows us to restart this stream on failure)
@@ -31,6 +31,7 @@ object TwitterStreamingCollector {
     val outputFile: String = args(0)   // outputFile = "tweets/
     val batchInterval: Int = args(1).toInt
     val partitionNum: Int = args(2).toInt
+    val numTweetsToCollect: Int = args(3).toInt
     //val keyWordsFilters: Seq[String] = args.takeRight(args.length - baseParamsCount)
     val keyWordsFilters = Seq("#LePen","#Macron","#Fillon","#JLM2017","#Hamon","#Mélenchon","#Sarkozy")
 
@@ -67,7 +68,7 @@ object TwitterStreamingCollector {
 
       fields.map{case (f, name, hiveType) => f(s)}
         .map(f => safeValue(f))
-        .mkString("\t")
+        .mkString("|")
     }
     //val fileWriter = new FileWriter(outputFile)
     val twitterStream = TwitterUtils.createStream(ssc, None, keyWordsFilters)
@@ -100,9 +101,9 @@ object TwitterStreamingCollector {
       val count = rdd.count()
       if (rdd.count() > 0) {
           println("Number of tweets received: " + count)
+          numTweetsCollected += count
           val outputRDD = rdd.repartition(partitionNum)
           outputRDD.saveAsTextFile(outputFile + "tweetsmerged")
-          numTweetsCollected += count
           if (numTweetsCollected > numTweetsToCollect) {
             System.exit(0)
             }
