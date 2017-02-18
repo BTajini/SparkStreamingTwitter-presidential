@@ -72,10 +72,14 @@ object TwitterStreamingCollector {
     //val fileWriter = new FileWriter(outputFile)
     val twitterStream = TwitterUtils.createStream(ssc, None, keyWordsFilters)
 
-
+    val frenchTweets = twitterStream.filter { status =>
+      Option(status.getUser).flatMap[String] {
+        u => Option(u.getLang)
+      }.getOrElse("").startsWith("fr") && CharMatcher.ASCII.matchesAllOf(status.getText) && ( keys.isEmpty || keys.exists{status.getText.contains(_)})
+    }
 
     // Format each tweet
-    val formattedStatuses = twitterStream.map(s => formatStatus(s))
+    val formattedStatuses = frenchTweets.map(s => formatStatus(s))
 
 
     //val frenchTweets = twitterStream.filter { status =>
@@ -83,11 +87,7 @@ object TwitterStreamingCollector {
        // u => Option(u.getLang)
       //}.getOrElse("").startsWith("fr")
     //}
-    val frenchTweets = formattedStatuses.filter { status =>
-        Option(status.getUser).flatMap[String] {
-          u => Option(u.getLang)
-        }.getOrElse("").startsWith("fr") && CharMatcher.ASCII.matchesAllOf(status.getText) && ( keys.isEmpty || keys.exists{status.getText.contains(_)})
-      }
+
 
 
 
