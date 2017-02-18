@@ -96,7 +96,7 @@ object TwitterStreamingCollector {
 
 
 
-    frenchTweets.foreachRDD((rdd, time) => {
+    formattedStatuses.foreachRDD((rdd, time) => {
       val count = rdd.count()
       if (rdd.count() > 0) {
           println("Number of tweets received: " + count)
