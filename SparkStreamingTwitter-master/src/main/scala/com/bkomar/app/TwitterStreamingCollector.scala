@@ -62,8 +62,17 @@ object TwitterStreamingCollector {
         else {
           numTweetsCollected += count
           println("Number of tweets received: " + count)
-          rdd.repartition(partitionNum).coalesce(1, shuffle = true).saveAsTextFile(checkpointDir + outputPath + "tweetsmerged")
+          rdd
+            .map(t => (
+              t.getUser.getName,
+              t.getCreatedAt.toString,
+              t.getText,
+              t.getHashtagEntities.map(_.getText).mkString(Utils.hashTagSeparator)
+              //            t.getRetweetCount  issue in twitter api, always returns 0
+            )).repartition(partitionNum).coalesce(1, shuffle = true).saveAsTextFile(checkpointDir + outputPath + "tweetsmerged")
             //.coalesce(1, shuffle = true).saveAsTextFile(outputPath + "tweets" + time.milliseconds.toString + ".txt")
+
+
 
         }
 
