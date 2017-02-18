@@ -45,7 +45,7 @@ object TwitterStreamingCollector {
 
 
 
-    }
+
     val twitterStream = TwitterUtils.createStream(ssc, None, keyWordsFilters)
     val frenchTweets = twitterStream.filter { status =>
       Option(status.getUser).flatMap[String] {
