@@ -75,7 +75,7 @@ object TwitterStreamingCollector {
     val frenchTweets = twitterStream.filter { status =>
       Option(status.getUser).flatMap[String] {
         u => Option(u.getLang)
-      }.getOrElse("").startsWith("fr") && CharMatcher.ASCII.matchesAllOf(status.getText) && ( keys.isEmpty || keys.exists{status.getText.contains(_)})
+      }.getOrElse("").startsWith("fr")
     }
 
     // Format each tweet
