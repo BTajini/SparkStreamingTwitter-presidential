@@ -13,10 +13,10 @@ object TwitterStreamingCollector {
 
 
   def main(args: Array[String]) {
-
+    val a:Option[Int] = 3600
     // Size of output batches in seconds
 
-    val outputBatchInterval = toInt("3600").getOrElse(60)
+    val outputBatchInterval = a.getOrElse(60)
     //number of args except filters
     val baseParamsCount = 3
     if (args.length < 4) {
@@ -88,7 +88,12 @@ object TwitterStreamingCollector {
       case 3600 => new java.text.SimpleDateFormat("yyyy/MM/dd/HH")
     }
     val twitterStream = TwitterUtils.createStream(ssc, None, keyWordsFilters)
-    val frenchTweets = twitterStream.getUser.getLang == "fr"
+    val frenchTweets = twitterStream.filter { status =>
+      Option(status.getUser).flatMap[String] {
+        u => Option(u.getLang)
+      }.getOrElse("").startsWith("fr")
+    }
+
     // Format each tweet
     val formattedStatuses = frenchTweets.map(s => formatStatus(s))
 
