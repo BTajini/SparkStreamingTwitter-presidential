@@ -13,9 +13,10 @@ object TwitterStreamingCollector {
 
 
   def main(args: Array[String]) {
+
     // Size of output batches in seconds
 
-    val outputBatchInterval = a
+    val outputBatchInterval = 3600
     //number of args except filters
     val baseParamsCount = 3
     if (args.length < 3) {
@@ -130,6 +131,6 @@ object TwitterStreamingCollector {
     })
     //ssc.checkpoint(checkpointDir)
     ssc.start()
-    ssc.awaitTermination()
+    //ssc.awaitTermination()
   }
 }
