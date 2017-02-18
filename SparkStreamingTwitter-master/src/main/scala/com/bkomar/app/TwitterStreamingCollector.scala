@@ -88,13 +88,13 @@ object TwitterStreamingCollector {
       case 3600 => new java.text.SimpleDateFormat("yyyy/MM/dd/HH")
     }
     val twitterStream = TwitterUtils.createStream(ssc, None, keyWordsFilters)
-
+    val frenchTweets = twitterStream.getUser.getLang == "fr"
     // Format each tweet
-    val formattedStatuses = twitterStream.map(s => formatStatus(s))
+    val formattedStatuses = frenchTweets.map(s => formatStatus(s))
 
-    val frenchTweets = formattedStatuses.getUser.getLang == "fr"
+
     // Group into larger batches
-    val batchedStatuses = frenchTweets.window(Seconds(outputBatchInterval), Seconds(outputBatchInterval))
+    val batchedStatuses = formattedStatuses.window(Seconds(outputBatchInterval), Seconds(outputBatchInterval))
 
 
 
