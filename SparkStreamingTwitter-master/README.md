@@ -19,8 +19,11 @@ ctrl+a to insert
 spark-submit --master local[2] --class com.badr.app.TwitterStreamingCollector TwitterStreaming-1.0-SNAPSHOT-jar-with-dependencies.jar outputDir 10 1 100
 ```
 ##### Application parameters
-#####Run streaming with the following parameters: <outputFile = /user/badr/tmp/tweets/> <batchIntervalSeconds = 10> " +
-"<partitionsNum = 1> <numTweetsToCollect = 2000>
+#####Run streaming with the following parameters:
+
+```
+<outputFile = /user/badr/tmp/tweets/> <batchIntervalSeconds = 10> <partitionsNum = 1> <numTweetsToCollect = 2000>
+```
 
 ##Step 1 :
 ```
@@ -58,7 +61,7 @@ TwitterStreaming-1.0-SNAPSHOT-jar-with-dependencies.jar \
 hadoop fs -ls /user/badr/tmp/tweets/tweetsmerged/
 ```
 
-#####if you want to If you want to view the collected tweets
+#####If you want to view the collected tweets
 ```
 vim part-00000
 ```
@@ -135,7 +138,7 @@ wordCounts.groupBy("text").count().show()
 
 ```
 val sqlCtx = new org.apache.spark.sql.SQLContext(sc)
-val texts = sqlCtx.sql("SELECT text from twitter_presi WHERE text IS NOT NULL").map(_.toString) // if it didn't work, run the command below
+val texts = sqlCtx.sql("SELECT text from twitter_presi WHERE text IS NOT NULL").map(_.toString)
 ```
 #####if sqlCtx didn't work, try the command below :
 ```
@@ -183,16 +186,20 @@ sc.makeRDD(model.clusterCenters, 10).saveAsObjectFile("/user/badr/tmp/tweets/myM
 #####Now we can apply the model to a live twitter stream.
 
 ##For the deliver :
+
 ```
-gedit sample.sql ```
+gedit sample.sql
+```
 
 #####to save on .sql our script and to save on .scala
+
 ```
 gedit sample.scala
 ```
 
 ##BONUS:
 #####to run our script saved as sample.sql directly on Hive:
+
 ```
 hive –f /home/badr/sample.sql
 ```
