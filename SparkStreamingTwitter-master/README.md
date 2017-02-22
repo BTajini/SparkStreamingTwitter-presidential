@@ -1,5 +1,12 @@
 # Spark Streaming Twitter - Presidential 2017
 
+```
+#---Author--- : Badr Tajini
+#---Collaborator--- : Michael Faivre - Suresh Annapureddy - Dominique Mariko
+#---Campus--- : Paris (On-Campus)
+#---Release--- : 19/02/2017 - V2.0
+```
+
 ##Step 0 :
 ##### To build project use ```mvn package```
 ##### Target dir will contain two jars - with and without included dependencies
