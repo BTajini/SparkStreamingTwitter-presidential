@@ -16,9 +16,9 @@ ctrl+a to insert
 ```
 ##### To execute application locally in Spark use :
 ```
-spark-submit --master local[2] --class com.badr.app.TwitterStreamingCollector TwitterStreaming-1.0-SNAPSHOT-jar-with-dependencies.jar outputDir 10 1 100
+spark-submit --master local[2] --class com.badr.app.TwitterStreamingCollector TwitterStreaming-1.0-SNAPSHOT-jar-with-dependencies.jar C:\Users\Badr\...\... 10 1 100
 ```
-##### Application parameters
+##### HINT : Application parameters
 #####Run streaming with the following parameters:
 
 ```
@@ -45,7 +45,7 @@ rm -rf SparkStreamingTwitter-presidential
 
 ```
 cd target
-to submit your spark application:
+to submit your spark application - read the HINT above :
 ```
 #####to submit your spark application , be aware fot the last parameter, edit if you want the collected tweets <numTweetsToCollect = 2000 or 200 or 100> :
 ```
@@ -182,6 +182,12 @@ println(t)
 ```
 sc.makeRDD(model.clusterCenters, 10).saveAsObjectFile("/user/badr/tmp/tweets/myModelfortwitter")
 
+```
+
+#####transfer your model to your home :
+
+```
+hadoop fs -get /user/badr/tmp/tweets/myModelfortwitter  /home/badr/
 ```
 #####Now we can apply the model to a live twitter stream.
 
