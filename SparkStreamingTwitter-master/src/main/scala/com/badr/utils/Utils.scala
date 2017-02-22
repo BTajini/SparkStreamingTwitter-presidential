@@ -1,4 +1,4 @@
-package com.bkomar.utils
+package com.badr.utils
 
 import java.util.Properties
 import scala.io.Source

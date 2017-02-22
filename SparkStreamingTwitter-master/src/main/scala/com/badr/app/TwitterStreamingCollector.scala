@@ -1,6 +1,6 @@
-package com.bkomar.app
+package com.badr.app
 
-import com.bkomar.utils.Utils
+import com.badr.utils.Utils
 import java.util.Date
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.twitter.TwitterUtils
@@ -15,24 +15,21 @@ object TwitterStreamingCollector {
 
   def main(args: Array[String]) {
 
-
-
-
     //number of args except filters
     val baseParamsCount = 3
     if (args.length < 4) {
-      System.err.println("Run streaming with the following parameters: <outputFile> <batchIntervalSeconds> " +
-        "<partitionsNum> <numTweetsToCollect>")
+      System.err.println("Run streaming with the following parameters: <outputFile = /user/badr/tmp/tweets/> <batchIntervalSeconds = 10> " +
+        "<partitionsNum = 1> <numTweetsToCollect = 2000>")
       System.exit(1)
     }
     // Local directory for stream checkpointing (allows us to restart this stream on failure)
 
-    //TODO bk move to utils
+
     val outputFile: String = args(0)   // outputFile = "tweets/
     val batchInterval: Int = args(1).toInt
     val partitionNum: Int = args(2).toInt
     val numTweetsToCollect: Int = args(3).toInt
-    //val keyWordsFilters: Seq[String] = args.takeRight(args.length - baseParamsCount)
+    //val keyWordsFilters: Seq[String] = args.takeRight(args.length - baseParamsCount) // if we want add keywords by parameters
     val keyWordsFilters = Seq("#LePen","#Macron","#Fillon","#JLM2017","#Hamon","#Mélenchon","#Sarkozy")
 
 
@@ -70,7 +67,7 @@ object TwitterStreamingCollector {
         .map(f => safeValue(f))
         .mkString("|")
     }
-    //val fileWriter = new FileWriter(outputFile)
+
     val twitterStream = TwitterUtils.createStream(ssc, None, keyWordsFilters)
 
     val frenchTweets = twitterStream.filter { status =>
@@ -81,19 +78,6 @@ object TwitterStreamingCollector {
 
     // Format each tweet
     val formattedStatuses = frenchTweets.map(s => formatStatus(s))
-
-
-    //val frenchTweets = twitterStream.filter { status =>
-     // Option(status.getUser).flatMap[String] {
-       // u => Option(u.getLang)
-      //}.getOrElse("").startsWith("fr")
-    //}
-
-
-
-
-        //val line = s"${geoLocation.getLongitude},${geoLocation.getLatitude},$text\n"
-
 
 
 
@@ -112,8 +96,8 @@ object TwitterStreamingCollector {
         }
 
 
-        //TODO bk add checkpointing
-        //test for hive and sql context
+        //TODO  add checkpointing
+        //TODO condition not null GetgeoLocation
       }
     )
     //ssc.checkpoint(checkpointDir)
