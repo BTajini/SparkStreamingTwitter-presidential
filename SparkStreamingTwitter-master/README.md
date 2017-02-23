@@ -2,7 +2,7 @@
 
 ```
 #---Author--- : Badr Tajini
-#---Collaborator--- : Michael Faivre - Suresh Annapureddy - Dominique Mariko
+#---Collaborator--- : Michael Faivre - Suresh Annapureddy - Dominique Mariko - Mylène Chau
 #---Campus--- : Paris (On-Campus)
 #---Release--- : 19/02/2017 - V2.0
 ```
@@ -50,11 +50,12 @@ rm -rf SparkStreamingTwitter-presidential
 #####if the build is successful, so we can run our application using the command below :
 #####be aware, must change the name of the user depending on your first name!
 
+#####to submit your spark application - read the HINT above :
 ```
 cd target
-to submit your spark application - read the HINT above :
+
 ```
-#####to submit your spark application , be aware fot the last parameter, edit if you want the collected tweets <numTweetsToCollect = 2000 or 200 or 100> :
+#####to submit your spark application , be aware fot the last parameter, edit if you want to collect more or less tweets <numTweetsToCollect = 2000 or 200 or 100> :
 ```
 spark-submit --class com.badr.app.TwitterStreamingCollector \
 --master yarn-client \
