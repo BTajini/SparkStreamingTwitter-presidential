@@ -129,7 +129,7 @@ case class tweet(text: String, latitude: Option[Float], longitude: Option[Float]
 ```
 #####7.
 ```
-val wordCounts = hc.sql("select * from twitter_presi").as[tweet_prezi].rdd
+val wordCounts = hc.sql("select * from twitter_presi").as[tweet].rdd
 ```
 #####Some tests on our RDD
 ```
