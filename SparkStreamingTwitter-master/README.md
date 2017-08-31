@@ -2,7 +2,6 @@
 
 ```
 #---Author--- : Badr Tajini
-#---Collaborator--- : Michael Faivre - Suresh Annapureddy - Dominique Mariko - Mylène Chau
 #---Campus--- : Paris (On-Campus)
 #---Release--- : 19/02/2017 - V2.0
 ```
