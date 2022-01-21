@@ -54,20 +54,13 @@ ll
 mvn package
 ```
 
-If you want to delete all the repository
-```
-cd
-rm -rf SparkStreamingTwitter-presidential
-```
-
 If the build is successful, we can run our application using the command below 
+
+Submit your spark application , be aware fot the last parameter **2000**.
+> Edit if you want to collect more or less tweets **<numTweetsToCollect = 2000 or 200 or 100>** 
 ```
 cd target
 
-```
-Submit your spark application , be aware fot the last parameter.
-Edit if you want to collect more or less tweets **<numTweetsToCollect = 2000 or 200 or 100>** 
-```
 spark-submit --class com.badr.app.TwitterStreamingCollector \
 --master yarn-client \
 TwitterStreaming-1.0-SNAPSHOT-jar-with-dependencies.jar \
