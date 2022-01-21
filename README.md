@@ -56,8 +56,10 @@ mvn package
 
 If the build is successful, we can run our application using the command below 
 
-Submit your spark application , be aware fot the last parameter **2000**.
-> Edit if you want to collect more or less tweets **<numTweetsToCollect = 2000 or 200 or 100>** 
+Submit your spark application.
+>  Be aware fot the last parameter '**2000**'.
+>  
+>  Edit if you want to collect more or less tweets **<numTweetsToCollect = 2000 or 200 or 100>** 
 ```
 cd target
 
