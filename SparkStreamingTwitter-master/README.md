@@ -6,11 +6,11 @@
 #---Release--- : 19/02/2017 - V2.0
 ```
 
-##Step 0 :
+## Step 0 :
 ##### To build project use ```mvn package```
 ##### Target dir will contain two jars - with and without included dependencies
 
-##Before running app edit _app.properties_ credentials to setup Twitter connection (after git clone)
+## Before running app edit _app.properties_ credentials to setup Twitter connection (after git clone)
 ```
 cd SparkStreamingTwitter-presidential
 cd SparkStreamingTwitter-master
@@ -25,13 +25,13 @@ ctrl+a to insert
 spark-submit --master local[2] --class com.badr.app.TwitterStreamingCollector TwitterStreaming-1.0-SNAPSHOT-jar-with-dependencies.jar C:\Users\Badr\...\... 10 1 100
 ```
 ##### HINT : Application parameters
-#####Run streaming with the following parameters:
+##### Run streaming with the following parameters:
 
 ```
 <outputFile = /user/badr/tmp/tweets/> <batchIntervalSeconds = 10> <partitionsNum = 1> <numTweetsToCollect = 2000>
 ```
 
-##Step 1 :
+## Step 1 :
 ```
 git clone https://github.com/BTajini/SparkStreamingTwitter-presidential
 cd SparkStreamingTwitter-presidential
@@ -40,21 +40,21 @@ ll
 mvn package
 ```
 
-#####if you want to delete all the repository:
+##### if you want to delete all the repository:
 ```
 cd
 rm -rf SparkStreamingTwitter-presidential
 ```
 
-#####if the build is successful, so we can run our application using the command below :
-#####be aware, must change the name of the user depending on your first name!
+##### if the build is successful, so we can run our application using the command below :
+##### be aware, must change the name of the user depending on your first name!
 
-#####to submit your spark application - read the HINT above :
+##### to submit your spark application - read the HINT above :
 ```
 cd target
 
 ```
-#####to submit your spark application , be aware fot the last parameter, edit if you want to collect more or less tweets <numTweetsToCollect = 2000 or 200 or 100> :
+##### to submit your spark application , be aware fot the last parameter, edit if you want to collect more or less tweets <numTweetsToCollect = 2000 or 200 or 100> :
 ```
 spark-submit --class com.badr.app.TwitterStreamingCollector \
 --master yarn-client \
@@ -68,7 +68,7 @@ TwitterStreaming-1.0-SNAPSHOT-jar-with-dependencies.jar \
 hadoop fs -ls /user/badr/tmp/tweets/tweetsmerged/
 ```
 
-#####If you want to view the collected tweets
+##### If you want to view the collected tweets
 ```
 vim part-00000
 ```
@@ -78,10 +78,10 @@ transfer your tweets to your home :
 hadoop fs -get /user/badr/tmp/tweets/  /home/badr/
 ```
 
-##Step 2 :
+## Step 2 :
 
-#####How to create and feed your external table on hive.
-#####Run :
+##### How to create and feed your external table on hive.
+##### Run :
 ```
 Hive
 ```
@@ -92,45 +92,45 @@ DELIMITED FIELDS TERMINATED BY '|'
 LINES TERMINATED BY '\n'
 LOCATION '/user/badr/tmp/tweets/tweetsmerged/';
 ```
-#####Next Step :
+##### Next Step :
 ```
 show tables;
 select * from twitter_presi;
 select count(*) from twitter_presi;
 ```
-##Step 3 :
+## Step 3 :
 
-#####0.
+##### 0.
 ```
 spark-shell --master yarn --deploy-mode client
 ```
-#####1.
+##### 1.
 ```
 val hc = new org.apache.spark.sql.hive.HiveContext(sc)
 ```
-#####2.3.4
+##### 2.3.4
 ```
 hc.sql("select * from twitter_presi").show
 hc.sql("select * from twitter_presi").limit(2).show
 ```
-#####or
+##### or
 ```
 hc.sql("select text from twitter_presi limit 2").collect().foreach(println)
 ```
-#####5.
+##### 5.
 ```
 import hc.implicits._
 import java.sql.Timestamp
 ```
-#####6.
+##### 6.
 ```
 case class tweet(text: String, latitude: Option[Float], longitude: Option[Float], created_at: Option[Timestamp])  /option for nullable field
 ```
-#####7.
+##### 7.
 ```
 val wordCounts = hc.sql("select * from twitter_presi").as[tweet].rdd
 ```
-#####Some tests on our RDD
+##### Some tests on our RDD
 ```
 wordCounts.count()
 wordCounts.collect().foreach(println)
@@ -141,13 +141,13 @@ wordCounts.take(2).foreach(println)
 wordCounts.groupBy("text").count().show()
 ```
 
-##For MLIB  - Processing Data :
+## For MLIB  - Processing Data :
 
 ```
 val sqlCtx = new org.apache.spark.sql.SQLContext(sc)
 val texts = sqlCtx.sql("SELECT text from twitter_presi WHERE text IS NOT NULL").map(_.toString)
 ```
-#####if sqlCtx didn't work, try the command below :
+##### if sqlCtx didn't work, try the command below :
 ```
 val texts = hc.sql("SELECT text from twitter_presi WHERE text IS NOT NULL").map(_.toString)
 ```
@@ -170,11 +170,11 @@ val vectors = texts.map(featurize).cache()
 ```
 val model = KMeans.train(vectors, 10, 20)
 ```
-#####Some tweets from our collected tweets
+##### Some tweets from our collected tweets
 ```
 val some_tweets = texts.take(50)
 ```
-#####we create 10 clusters :
+##### We create 10 clusters :
 ```
 for (i <- 0 until 10) {
 println(s"\nCLUSTER $i:")
@@ -191,27 +191,27 @@ sc.makeRDD(model.clusterCenters, 10).saveAsObjectFile("/user/badr/tmp/tweets/myM
 
 ```
 
-#####transfer your model to your home :
+##### Transfer your model to your home dir :
 
 ```
 hadoop fs -get /user/badr/tmp/tweets/myModelfortwitter  /home/badr/
 ```
-#####Now we can apply the model to a live twitter stream.
+##### Now we can apply the model to a live twitter stream.
 
-##For the deliver :
+## For delivery :
 
 ```
 gedit sample.sql
 ```
 
-#####to save on .sql our script and to save on .scala
+##### To save in .sql or .scala file our script
 
 ```
 gedit sample.scala
 ```
 
-##BONUS:
-#####to run our script saved as sample.sql directly on Hive:
+## BONUS:
+##### To run our script saved as sample.sql directly on Hive:
 
 ```
 hive –f /home/badr/sample.sql
